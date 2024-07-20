@@ -2,12 +2,45 @@
 <html>
 <head>
   <title>Maze Visualization</title>
+  <style>
+    body {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      flex-direction: column;
+      height: 100vh;
+      background-color: #121212;
+      color: white;
+    }
+    .canvas-container {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+    #mazeCanvas {
+      width: 600px; /* Display width */
+      height: 400px; /* Display height */
+    }
+    .prompt-box {
+      background-color: #1e1e1e;
+      border: 1px solid #ccc;
+      padding: 10px;
+      margin-top: 10px;
+      width: 600px;
+      word-wrap: break-word;
+      color: grey;
+      font-size: 0.7em; /* Reduced font size */
+    }
+  </style>
 </head>
 <body>
-  <canvas id="mazeCanvas" width="400" height="400"></canvas>
-  <br>
-  <button id="regenerateBtn">Generate New Path</button>
-  <div id="imageContainer"></div>
+  <div class="canvas-container">
+    <canvas id="mazeCanvas" width="1200" height="800"></canvas> <!-- Set higher resolution -->
+    <button id="regenerateBtn">Generate New Path</button>
+    <div id="imageContainer"></div>
+    <div id="imagePrompt" class="prompt-box"></div>
+    <div id="blurbPrompt" class="prompt-box"></div>
+  </div>
   <script src="example.js"></script>
 </body>
 </html>
