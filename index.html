@@ -9,8 +9,8 @@
       align-items: center;
       flex-direction: column;
       height: 100vh;
-      background-color: #121212;
-      color: white;
+      background-color: #ffffff; /* Changed to white background */
+      color: black; /* Changed text color to black */
       margin: 0;
       overflow: hidden; /* Prevent body from scrolling */
     }
@@ -25,7 +25,7 @@
       height: 400px; /* Display height */
     }
     .prompt-box {
-      background-color: #1e1e1e;
+      background-color: #f5f5f5; /* Light gray background for prompt boxes */
       border: 1px solid #ccc;
       padding: 10px;
       margin-top: 10px;
@@ -33,11 +33,21 @@
       height: 120px; /* Fixed height */
       overflow-y: auto; /* Enable vertical scrolling */
       word-wrap: break-word;
-      color: grey;
-      font-size: 0.7em; /* Reduced font size */
+      color: #333; /* Darker text color for readability */
+      font-size: 0.9em; /* Slightly increased font size */
     }
     button {
       margin-top: 10px;
+      background-color: #007bff; /* Blue button background */
+      color: white; /* White button text */
+      border: none;
+      padding: 10px 20px;
+      cursor: pointer;
+      font-size: 1em;
+      border-radius: 5px; /* Rounded corners for button */
+    }
+    button:hover {
+      background-color: #0056b3; /* Darker blue on hover */
     }
   </style>
 </head>
