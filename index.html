@@ -1,64 +1,92 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-  <title>Maze Visualization</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Multimodal Reflection</title>
   <style>
     body {
       display: flex;
+      flex-direction: column;
       justify-content: center;
       align-items: center;
-      flex-direction: column;
-      height: 100vh;
-      background-color: #ffffff; /* Changed to white background */
-      color: black; /* Changed text color to black */
+      min-height: 100vh;
       margin: 0;
-      overflow: hidden; /* Prevent body from scrolling */
+      background-color: #f8f8f8;
+      color: #333;
+      font-family: 'Georgia', serif;
+      text-align: center;
+      padding: 14px;
     }
-    .canvas-container {
+    #contentWrapper {
       display: flex;
-      flex-direction: column;
       align-items: center;
-      max-height: 80%; /* Limit height to ensure visibility */
     }
-    #mazeCanvas {
-      width: 600px; /* Display width */
-      height: 400px; /* Display height */
-    }
-    .prompt-box {
-      background-color: #f5f5f5; /* Light gray background for prompt boxes */
-      border: 1px solid #ccc;
-      padding: 10px;
-      margin-top: 10px;
-      width: 600px;
-      height: 120px; /* Fixed height */
-      overflow-y: auto; /* Enable vertical scrolling */
-      word-wrap: break-word;
-      color: #333; /* Darker text color for readability */
-      font-size: 0.9em; /* Slightly increased font size */
-    }
-    button {
-      margin-top: 10px;
-      background-color: #007bff; /* Blue button background */
-      color: white; /* White button text */
-      border: none;
-      padding: 10px 20px;
+    #audioIcon, #musicIcon {
+      font-size: 2em; /* Size of the icons */
       cursor: pointer;
-      font-size: 1em;
-      border-radius: 5px; /* Rounded corners for button */
+      margin-right: 10px; /* Space between the icons and the image */
     }
-    button:hover {
-      background-color: #0056b3; /* Darker blue on hover */
+    #imageContainer {
+      margin-bottom: 28px;
+      text-align: center;
+      display: inline-block;  /* Dynamically size to fit the image */
+      padding: 10px;  /* Slightly increased padding */
+      background-color: #ffffff;
+      box-shadow: 0 3px 6px rgba(0, 0, 0, 0.1);
+      border: 1.4px solid #ccc;
+    }
+    #imageContainer img {
+      max-width: 100%;  /* Ensure the image fits within the container */
+      height: auto;
+      display: block;
+    }
+    #poemContainer {
+      text-align: center;
+      width: 70%; /* Increased width to fit more text */
+      border-top: 1.4px solid #ccc;
+      padding-top: 20px; /* Increased padding */
+      font-size: 1.1em; /* Increased font size */
+      background-color: #ffffff;
+      padding: 20px; /* Increased padding */
+      box-shadow: 0 3px 6px rgba(0, 0, 0, 0.1);
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    #poemContainer p {
+      font-size: 1.4em; /* Increased font size */
+      line-height: 1.6; /* Adjusted line height for better readability */
+      margin: 0;
+      font-style: italic;
+      white-space: pre-wrap; /* Preserve spaces and line breaks */
+      display: inline-block;
+    }
+    audio {
+      display: none; /* Hide the audio player */
     }
   </style>
 </head>
 <body>
-  <div class="canvas-container">
-    <canvas id="mazeCanvas" width="1200" height="800"></canvas> <!-- Set higher resolution -->
-    <button id="regenerateBtn">Generate New Path</button>
+  <div id="contentWrapper">
+    <span id="audioIcon">🎧</span> <!-- Headphones icon -->
+    <span id="musicIcon">🎵</span> <!-- Music note icon -->
     <div id="imageContainer"></div>
-    <div id="imagePrompt" class="prompt-box"></div>
-    <div id="blurbPrompt" class="prompt-box"></div>
   </div>
+  <div id="poemContainer"><p id="poemText"></p></div>
+
+  <!-- Background audio -->
+  <audio id="backgroundAudio" loop>
+    <source src="media/backgroundsounds.wav" type="audio/wav">
+    Your browser does not support the audio element.
+  </audio>
+
+  <audio id="poemAudio" controls>
+    <source id="audioSource" src="" type="audio/mpeg">
+    Your browser does not support the audio element.
+  </audio>
+
   <script src="example.js"></script>
 </body>
 </html>

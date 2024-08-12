@@ -1,203 +1,126 @@
 document.addEventListener('DOMContentLoaded', () => {
-  const canvas = document.getElementById('mazeCanvas');
-  const ctx = canvas.getContext('2d');
-  const regenerateBtn = document.getElementById('regenerateBtn');
+  const imageContainer = document.getElementById('imageContainer');
+  const poemContainer = document.getElementById('poemText');
+  const audioIcon = document.getElementById('audioIcon');
+  const musicIcon = document.getElementById('musicIcon');
+  const poemAudio = document.getElementById('poemAudio');
+  const audioSource = document.getElementById('audioSource');
+  const backgroundAudio = document.getElementById('backgroundAudio');
 
-  const width = canvas.width;
-  const height = canvas.height;
-  const gridSize = 20;
-  const cols = width / gridSize;
-  const rows = height / gridSize;
-
-  const imagePromptDiv = document.getElementById('imagePrompt');
-  const blurbPromptDiv = document.getElementById('blurbPrompt');
-
-  let animationId;
-
-  async function fetchPrompts() {
-    const response = await fetch('/get-prompts');
-    return response.json();
-  }
-
-  async function generatePath() {
-    ctx.clearRect(0, 0, width, height);
-
-    let x = Math.floor(Math.random() * cols);
-    let y = Math.floor(Math.random() * rows);
-    const endX = cols - 1;
-    const endY = 0;
-
-    let path = [[x, y]];
-
-    while (x !== endX || y !== endY) {
-      const dx = endX - x;
-      const dy = endY - y;
-
-      // Determine the direction to move
-      const moveX = dx !== 0 ? (dx / Math.abs(dx)) : 0;
-      const moveY = dy !== 0 ? (dy / Math.abs(dy)) : 0;
-
-      // Randomly choose to move in x or y direction
-      if (Math.random() < 0.5 && dx !== 0) {
-        x += moveX;
-      } else if (dy !== 0) {
-        y += moveY;
-      } else {
-        x += moveX;
-      }
-
-      path.push([x, y]);
-    }
-
-    // Cancel any ongoing animation
-    if (animationId) {
-      cancelAnimationFrame(animationId);
-    }
-
-    // Start the animation
-    let step = 0;
-    const color = getRandomColor();
-
-    function animate() {
-      if (step < path.length - 1) {
-        ctx.beginPath();
-        ctx.moveTo(path[step][0] * gridSize, path[step][1] * gridSize);
-        ctx.lineTo(path[step + 1][0] * gridSize, path[step + 1][1] * gridSize);
-        ctx.strokeStyle = color;
-        ctx.lineWidth = 2;
-        ctx.stroke();
-
-        step++;
-        animationId = requestAnimationFrame(animate);
-      } else {
-        // Draw start and end points after animation is complete
-        drawPoint(path[0][0], path[0][1], 'Start');
-        drawPoint(endX, endY, 'End');
-        // Ensure image and blurb generation after path drawing
-        generateAndDisplayImage();
-      }
-    }
-
-    animate();
-  }
-
-  function drawPoint(x, y, label) {
-    ctx.beginPath();
-    ctx.arc(x * gridSize, y * gridSize, 5, 0, Math.PI * 2);
-    ctx.fillStyle = 'red';
-    ctx.fill();
-
-    ctx.fillStyle = 'black';
-    ctx.font = '14px Arial';
-
-    // Adjust text placement
-    let textX, textY;
-    if (label === 'Start') {
-      textX = x * gridSize + 10;
-      textY = y * gridSize - 10;
-    } else { // 'End'
-      textX = x * gridSize - 40;
-      textY = y * gridSize + 20;
-    }
-
-    ctx.fillText(label, textX, textY);
-  }
-
-  function getRandomColor() {
-    const letters = '0123456789ABCDEF';
-    let color = '#';
-    for (let i = 0; i < 6; i++) {
-      color += letters[Math.floor(Math.random() * 16)];
-    }
-    return color;
-  }
-
-  async function generateAndDisplayImage() {
-    const prompts = await fetchPrompts();
-    const imagePrompt = prompts.imagePrompt;
-
+  async function generateAndDisplayContent() {
     try {
-      const response = await fetch('/generate-image', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({
-          prompt: imagePrompt
-        })
-      });
-
-      const data = await response.json();
-      const imageUrl = data.image_url;
-      console.log('Generated Image URL:', imageUrl);
-
-      const img = new Image();
-      img.src = imageUrl;
-      img.onload = () => {
-        ctx.drawImage(img, 10, 10, 300, 300); // Increased image size
-        generateAndDisplayBlurb();
-      };
-      img.onerror = (e) => {
-        console.error('Image load error', e);
-      };
-
-      // Display the image prompt
-      imagePromptDiv.textContent = `Image Prompt: ${imagePrompt}`;
-    } catch (error) {
-      console.error('Error generating image:', error);
-    }
-  }
-
-  async function generateAndDisplayBlurb() {
-    const prompts = await fetchPrompts();
-    const blurbPrompt = prompts.blurbPrompt;
-
-    try {
-      const response = await fetch('/generate-blurb', {
+      // Generate the poem first
+      const poemResponse = await fetch('/generate-poem', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
         }
       });
+      const poemData = await poemResponse.json();
+      const poemText = poemData.poem;
 
-      const data = await response.json();
-      const blurb = data.blurb;
+      // Apply typing effect to the poem text only after the poem is fully generated
+      typeText(poemText, poemContainer, 25); // Faster typing with a delay of 25ms
 
-      // Display the blurb on the canvas
-      ctx.fillStyle = 'rgba(255, 255, 255, 0.7)'; // Semi-transparent white background
-      ctx.fillRect(width - 520, height - 280, 500, 270); // Increased size
-      ctx.fillStyle = 'black';
-      ctx.font = '18px Arial'; // Increased font size
-      wrapText(ctx, blurb, width - 510, height - 260, 480, 24); // Adjusted size and line height
+      // Generate and display the image based on the poem
+      const imageResponse = await fetch('/generate-image', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          poem: poemText  // Pass the generated poem as input for the image
+        })
+      });
 
-      // Display the blurb prompt
-      blurbPromptDiv.textContent = `Blurb Prompt: ${blurbPrompt}`;
+      if (!imageResponse.ok) {
+        console.error('Failed to fetch image:', imageResponse.status, imageResponse.statusText);
+        return;
+      }
+
+      const imageData = await imageResponse.json();
+      console.log('Image URL:', imageData.image_url);  // Log the image URL
+
+      if (!imageData.image_url) {
+        console.error('No image URL returned from API');
+        return;
+      }
+
+      const img = new Image();
+      img.src = imageData.image_url;
+      img.alt = "Generated Reflection Image";
+
+      // Ensure image loading before appending
+      img.onload = () => {
+        console.log('Image loaded successfully');
+        imageContainer.appendChild(img);
+        adjustLayout();
+      };
+
+      img.onerror = () => {
+        console.error('Failed to load image.');
+      };
+
+      // Generate and set up audio
+      const audioResponse = await fetch('/generate-audio', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          poem: poemText  // Pass the generated poem as input for the audio
+        })
+      });
+
+      if (!audioResponse.ok) {
+        console.error('Failed to fetch audio:', audioResponse.status, audioResponse.statusText);
+        return;
+      }
+
+      const audioData = await audioResponse.json();
+      audioSource.src = audioData.audio_url;
+      poemAudio.load();  // Load the new audio source
+
+      adjustLayout();
     } catch (error) {
-      console.error('Error generating blurb:', error);
+      console.error('Error generating content:', error);
     }
   }
 
-  function wrapText(context, text, x, y, maxWidth, lineHeight) {
-    const words = text.split(' ');
-    let line = '';
-
-    for (let n = 0; n < words.length; n++) {
-      const testLine = line + words[n] + ' ';
-      const metrics = context.measureText(testLine);
-      const testWidth = metrics.width;
-      if (testWidth > maxWidth && n > 0) {
-        context.fillText(line, x, y);
-        line = words[n] + ' ';
-        y += lineHeight;
-      } else {
-        line = testLine;
+  function typeText(text, container, delay = 25) {
+    let i = 0;
+    container.innerHTML = ''; // Clear any previous content
+    function type() {
+      if (i < text.length) {
+        container.innerHTML += text.charAt(i);
+        i++;
+        setTimeout(type, delay);
       }
     }
-    context.fillText(line, x, y);
+    type();
   }
 
-  regenerateBtn.addEventListener('click', generatePath);
+  function adjustLayout() {
+    window.scrollTo(0, 0);
+    document.body.style.minHeight = `${document.body.scrollHeight}px`;
+  }
 
-  // Initial generation
-  generatePath();
+  // Play audio when the icon is clicked
+  audioIcon.addEventListener('click', () => {
+    poemAudio.play();
+  });
+
+  // Toggle background music on or off
+  musicIcon.addEventListener('click', () => {
+    if (backgroundAudio.paused) {
+      backgroundAudio.play();
+      musicIcon.textContent = '🔊';  // Change icon to indicate audio is playing
+    } else {
+      backgroundAudio.pause();
+      musicIcon.textContent = '🔇';  // Change icon to indicate audio is muted
+    }
+  });
+
+  // Initial content generation
+  generateAndDisplayContent();
 });
