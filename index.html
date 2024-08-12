@@ -12,69 +12,113 @@
       align-items: center;
       min-height: 100vh;
       margin: 0;
-      background-color: #f8f8f8;
+      background-color: #f0f0f0;
       color: #333;
       font-family: 'Georgia', serif;
       text-align: center;
-      padding: 14px;
+      padding: 20px;
     }
+
     #contentWrapper {
       display: flex;
+      flex-direction: column;
       align-items: center;
-    }
-    #audioIcon, #musicIcon {
-      font-size: 2em; /* Size of the icons */
-      cursor: pointer;
-      margin-right: 10px; /* Space between the icons and the image */
-    }
-    #imageContainer {
-      margin-bottom: 28px;
-      text-align: center;
-      display: inline-block;  /* Dynamically size to fit the image */
-      padding: 10px;  /* Slightly increased padding */
+      border: 5px solid #bbb;
+      border-radius: 12px;
+      padding: 25px;
       background-color: #ffffff;
-      box-shadow: 0 3px 6px rgba(0, 0, 0, 0.1);
-      border: 1.4px solid #ccc;
+      box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+      max-width: 90%;
     }
+
+    #imageContainer {
+      margin-bottom: 30px;
+      padding: 15px;
+      background-color: #fafafa;
+      border: 2px solid #ddd;
+      border-radius: 8px;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    }
+
     #imageContainer img {
-      max-width: 100%;  /* Ensure the image fits within the container */
+      max-width: 100%;
       height: auto;
       display: block;
     }
-    #poemContainer {
-      text-align: center;
-      width: 70%; /* Increased width to fit more text */
-      border-top: 1.4px solid #ccc;
-      padding-top: 20px; /* Increased padding */
-      font-size: 1.1em; /* Increased font size */
-      background-color: #ffffff;
-      padding: 20px; /* Increased padding */
-      box-shadow: 0 3px 6px rgba(0, 0, 0, 0.1);
-      position: relative;
+
+    #iconWrapper {
       display: flex;
-      align-items: center;
       justify-content: center;
+      margin-bottom: 20px;
     }
+
+    #audioIcon, #musicIcon, #promptIcon {
+      font-size: 2.5em;
+      cursor: pointer;
+      margin: 0 15px;
+      color: #666;
+      transition: color 0.3s, transform 0.3s;
+    }
+
+    #audioIcon:hover, #musicIcon:hover, #promptIcon:hover {
+      color: #000;
+      transform: scale(1.1);
+    }
+
+    #poemContainer {
+      width: 85%;
+      max-width: 600px; /* Set a max-width for consistency */
+      border-top: 2px solid #ddd;
+      padding-top: 20px;
+      background-color: #fafafa;
+      padding: 30px;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+      border-radius: 8px;
+      font-size: 1.2em;
+    }
+
     #poemContainer p {
-      font-size: 1.4em; /* Increased font size */
-      line-height: 1.6; /* Adjusted line height for better readability */
+      font-size: 1.2em;
+      line-height: 1.8;
       margin: 0;
       font-style: italic;
-      white-space: pre-wrap; /* Preserve spaces and line breaks */
-      display: inline-block;
+      white-space: pre-wrap;
+      color: #444;
     }
+
+    #promptContainer {
+      width: 85%;
+      max-width: 600px; /* Match the width of the poem container */
+      display: none;
+      margin-top: 20px;
+      padding: 20px;
+      background-color: #f9f9f9;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+      text-align: left;
+      font-size: 1em;
+      color: #333;
+    }
+
     audio {
-      display: none; /* Hide the audio player */
+      display: none;
     }
   </style>
 </head>
 <body>
   <div id="contentWrapper">
-    <span id="audioIcon">🎧</span> <!-- Headphones icon -->
-    <span id="musicIcon">🎵</span> <!-- Music note icon -->
     <div id="imageContainer"></div>
+    <div id="iconWrapper">
+      <span id="audioIcon">🎧</span>
+      <span id="musicIcon">🎵</span>
+      <span id="promptIcon">📜</span>
+    </div>
+    <div id="poemContainer"><p id="poemText"></p></div>
+    <div id="promptContainer">
+      <p id="promptText"></p>
+    </div>
   </div>
-  <div id="poemContainer"><p id="poemText"></p></div>
 
   <!-- Background audio -->
   <audio id="backgroundAudio" loop>
